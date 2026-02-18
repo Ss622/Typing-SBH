@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SATYA BHAI HCM | TYPEING KE CHEETE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --army-green: #2d3436;
+            --gold: #d4af37;
+            --neon: #00cec9;
+            --bg: #000000;
+            --card: #121212;
+            --err: #ff7675;
+            --success: #55efc4;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #dfe6e9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--gold);
+            padding: 10px 50px;
+        }
+
+        h1 { font-size: 2.2rem; color: var(--gold); text-transform: uppercase; letter-spacing: 4px; }
+        .sub-h { color: var(--neon); font-weight: 800; font-size: 1.1rem; }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--card);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 0 30px rgba(0,206,201,0.1);
+        }
+
+        /* Config Styles */
+        .config-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
+        .option-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 0.85rem; color: #b2bec3; font-weight: bold; text-transform: uppercase; }
+        
+        select, textarea, input {
+            background: #1e1e1e;
+            border: 1px solid #444;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            background: #1e1e1e;
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: #636e72;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 5px;
+        }
+
+        .mode-btn.active { background: var(--gold); color: black; }
+
+        .btn-main {
+            background: var(--gold);
+            color: black;
+            border: none;
+            padding: 15px;
+            border-radius: 6px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        /* HUD & Display */
+        #test-interface { display: none; }
+        .hud {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            background: #000;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--neon);
+        }
+        .hud-item { text-align: center; }
+        .hud-val { font-family: 'Roboto Mono', monospace; font-size: 1.5rem; color: var(--success); display: block; }
+        .hud-lab { font-size: 0.7rem; color: #636e72; text-transform: uppercase; }
+
+        #display-box {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            background: #050505;
+            padding: 25px;
+            border-radius: 10px;
+            height: 250px;
+            overflow-y: auto;
+            border: 1px solid #222;
+            margin-bottom: 20px;
+        }
+
+        .word { padding: 0 4px; border-radius: 3px; }
+        .active-word { background: var(--neon); color: black; }
+        .correct { color: var(--success); }
+        .wrong { color: var(--err); text-decoration: underline; }
+
+        #typing-input {
+            width: 100%;
+            background: #000;
+            border: 2px solid var(--gold);
+            font-size: 1.5rem;
+            font-family: 'Roboto Mono', monospace;
+            padding: 15px;
+            color: var(--neon);
+        }
+
+        /* Results */
+        #result-screen { display: none; text-align: center; }
+        .res-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 30px 0; }
+        .res-box { background: #1a1a1a; padding: 20px; border-radius: 10px; border-bottom: 4px solid var(--gold); }
+        .res-val { font-size: 2.5rem; color: var(--gold); font-weight: 900; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>SATYA BHAI HCM</h1>
+    <div class="sub-h">TYPEING KE CHEETE 🐆</div>
+</header>
+
+<div class="container">
+    <div id="setup-screen">
+        <div class="config-grid">
+            <div class="option-group">
+                <label>Test Mode</label>
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="mode-screen" onclick="setMode('screen')">ON SCREEN</button>
+                    <button class="mode-btn" id="mode-paper" onclick="setMode('paper')">PRINTED PAPER</button>
+                </div>
+            </div>
+            <div class="option-group">
+                <label>Select Pre-fed Test (500 Words)</label>
+                <select id="test-select" onchange="loadTest()">
+                    <option value="">-- CUSTOM / PASTE TEXT --</option>
+                    <option value="1">Test 1: Administrative Efficiency</option>
+                    <option value="2">Test 2: Economic Resilience</option>
+                    <option value="3">Test 3: Judicial Procedures</option>
+                    <option value="4">Test 4: Socio-Cultural Impacts</option>
+                    <option value="5">Test 5: Global Political Shift</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="option-group" style="margin-bottom: 20px;">
+            <label>Typing Material</label>
+            <textarea id="text-input" rows="8" placeholder="Paste 500 words here..."></textarea>
+        </div>
+
+        <div class="config-grid">
+            <div class="option-group">
+                <label>Timer (Minutes)</label>
+                <input type="number" id="time-limit" value="10">
+            </div>
+            <div class="option-group">
+                <label>Backspace</label>
+                <select id="backspace-set">
+                    <option value="allow">Allowed</option>
+                    <option value="block">Blocked</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-main" onclick="startTest()">Start Mission</button>
+    </div>
+
+    <div id="test-interface">
+        <div class="hud">
+            <div class="hud-item"><span class="hud-val" id="hud-timer">10:00</span><span class="hud-lab">Time Left</span></div>
+            <div class="hud-item"><span class="hud-val" id="hud-gross">0</span><span class="hud-lab">Gross WPM</span></div>
+            <div class="hud-item"><span class="hud-val" id="hud-chars">0</span><span class="hud-lab">Correct Chars</span></div>
+            <div class="hud-item"><span class="hud-val" id="hud-correct">0</span><span class="hud-lab">Correct Words</span></div>
+            <div class="hud-item"><span class="hud-val" id="hud-wrong" style="color:var(--err)">0</span><span class="hud-lab">Errors</span></div>
+        </div>
+        
+        <div id="display-box"></div>
+        <div id="paper-mode-msg" style="display:none; text-align:center; padding:20px; color:var(--gold); font-weight:bold;">
+            PAPER MODE ACTIVE: TYPE FROM YOUR PRINTED SHEET
+        </div>
+        
+        <input type="text" id="typing-input" autocomplete="off" placeholder="Type here and press Space...">
+    </div>
+
+    <div id="result-screen">
+        <h2 style="color:var(--neon)">PERFORMANCE REPORT</h2>
+        <div class="res-grid">
+            <div class="res-box"><div class="res-val" id="res-gross">0</div><div>Gross WPM</div></div>
+            <div class="res-box"><div class="res-val" id="res-chars">0</div><div>Correct Characters</div></div>
+            <div class="res-box"><div class="res-val" id="res-acc">0%</div><div>Accuracy</div></div>
+        </div>
+        <div style="background:#000; padding:15px; border-radius:10px; text-align:left; color:var(--err); font-family:monospace;" id="error-log"></div>
+        <button class="btn-main" style="margin-top:20px" onclick="location.reload()">New Test</button>
+    </div>
+</div>
+
+<script>
+    // Logic for diagrams: The typing speed flow follows [Correct Chars -> Word Equivalence -> Time Division]
+    
+    const tests = {
+        "1": "The recruitment of Head Constable Ministerial is an essential process in the Central Armed Police Forces. Candidates must demonstrate exceptional typing skills and clerical aptitude. In the modern era, administrative efficiency depends on the speed and accuracy of digital documentation. The selection process involves a rigorous typing test where a speed of thirty-five words per minute in English is mandatory. This requirement ensures that the force maintains a high standard of record-keeping and communication. Beyond speed, the ability to work under pressure is a key trait sought in every aspirant. Disciplined practice is the only path to mastering the keyboard.",
+        "2": "Economic resilience in the face of global uncertainty has become a priority for major nations. India, as a growing superpower, has implemented several reforms to stabilize its market. The manufacturing sector and digital services have shown remarkable growth over the last decade. Financial analysts suggest that the integration of technology in rural areas will further boost the gross domestic product. However, challenges like inflation and supply chain disruptions require constant monitoring. Infrastructure development, including the expansion of highways and high-speed rail, is creating millions of new opportunities for the youth."
+    };
+
+    let words = [];
+    let currentIdx = 0;
+    let timer;
+    let timeRemaining;
+    let isRunning = false;
+    let testMode = 'screen';
+    let stats = { correctWords: 0, wrongWords: 0, correctChars: 0, mistakes: [] };
+
+    function setMode(m) {
+        testMode = m;
+        document.getElementById('mode-screen').classList.toggle('active', m === 'screen');
+        document.getElementById('mode-paper').classList.toggle('active', m === 'paper');
+    }
+
+    function loadTest() {
+        const val = document.getElementById('test-select').value;
+        if(val) document.getElementById('text-input').value = tests[val];
+    }
+
+    function startTest() {
+        const text = document.getElementById('text-input').value.trim();
+        if(!text) return alert("Please load or paste typing material.");
+
+        words = text.split(/\s+/);
+        timeRemaining = parseInt(document.getElementById('time-limit').value) * 60;
+        
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('test-interface').style.display = 'block';
+
+        if(testMode === 'screen') {
+            const display = document.getElementById('display-box');
+            display.innerHTML = words.map((w, i) => `<span id="w-${i}" class="word">${w}</span>`).join(' ');
+            document.getElementById(`w-0`).className = 'word active-word';
+        } else {
+            document.getElementById('display-box').style.display = 'none';
+            document.getElementById('paper-mode-msg').style.display = 'block';
+        }
+
+        document.getElementById('typing-input').focus();
+    }
+
+    document.getElementById('typing-input').addEventListener('keydown', function(e) {
+        if(e.key === 'Backspace' && document.getElementById('backspace-set').value === 'block') {
+            e.preventDefault();
+            return;
+        }
+
+        if(!isRunning && e.key !== 'Tab') {
+            startTimer();
+            isRunning = true;
+        }
+
+        if(e.key === ' ') {
+            e.preventDefault();
+            checkWord();
+        }
+    });
+
+    function startTimer() {
+        timer = setInterval(() => {
+            timeRemaining--;
+            let m = Math.floor(timeRemaining / 60);
+            let s = timeRemaining % 60;
+            document.getElementById('hud-timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            
+            // USER'S CUSTOM GROSS CALCULATION: (Correct Chars / 5) / Time
+            const timePassed = (parseInt(document.getElementById('time-limit').value) * 60 - timeRemaining) / 60;
+            if(timePassed > 0) {
+                let gross = Math.round((stats.correctChars / 5) / timePassed);
+                document.getElementById('hud-gross').innerText = gross;
+            }
+
+            if(timeRemaining <= 0) endTest();
+        }, 1000);
+    }
+
+    function checkWord() {
+        const typed = document.getElementById('typing-input').value.trim();
+        if(!typed) return;
+
+        const target = words[currentIdx];
+        const wordEl = document.getElementById(`w-${currentIdx}`);
+
+        if(typed === target) {
+            if(wordEl) wordEl.className = 'word correct';
+            stats.correctWords++;
+            stats.correctChars += target.length + 1; // Word length + space
+        } else {
+            if(wordEl) wordEl.className = 'word wrong';
+            stats.wrongWords++;
+            stats.mistakes.push(`[${target}] typed as [${typed}]`);
+            // Note: Wrong characters are NOT added to stats.correctChars as per user request
+        }
+
+        currentIdx++;
+        document.getElementById('hud-chars').innerText = stats.correctChars;
+        document.getElementById('hud-correct').innerText = stats.correctWords;
+        document.getElementById('hud-wrong').innerText = stats.wrongWords;
+        document.getElementById('typing-input').value = "";
+
+        if(currentIdx >= words.length) {
+            endTest();
+        } else if(testMode === 'screen') {
+            const next = document.getElementById(`w-${currentIdx}`);
+            next.className = 'word active-word';
+            next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function endTest() {
+        clearInterval(timer);
+        document.getElementById('test-interface').style.display = 'none';
+        document.getElementById('result-screen').style.display = 'block';
+
+        const totalMins = parseInt(document.getElementById('time-limit').value);
+        const gross = Math.round((stats.correctChars / 5) / totalMins);
+        
+        document.getElementById('res-gross').innerText = gross;
+        document.getElementById('res-chars').innerText = stats.correctChars;
+        document.getElementById('res-acc').innerText = Math.round((stats.correctWords / (stats.correctWords + stats.wrongWords)) * 100) + "%";
+        
+        if(stats.mistakes.length > 0) {
+            document.getElementById('error-log').innerHTML = "<b>ERRORS DETECTED:</b><br>" + stats.mistakes.slice(0, 20).join("<br>");
+        }
+    }
+</script>
+</body>
+</html>
